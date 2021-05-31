@@ -1,32 +1,434 @@
-  {% load jsonify %}
-  <html>
+{% load jsonify %}
+<html>
     <head>
         <!-- Include Vue 2.x -->
         <script src="https://cdn.jsdelivr.net/npm/vue@^2"></script>
         <!-- Include vue-finder & its styles -->
         <script src="https://cdn.jsdelivr.net/npm/@jledentu/vue-finder@1.20.0/dist/vue-finder.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@jledentu/vue-finder@1.20.0/dist/vue-finder.css">
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@jledentu/vue-finder@1.20.0/dist/vue-finder.css"> -->
+        <style>
+          .tree-container[data-v-e71808a6] {
+  overflow-x: auto;
+  height: 10rem;
+}
+.tree-container .list-container[data-v-e71808a6] {
+  display: flex;
+  height: 10rem;
+}
+
+/*# sourceMappingURL=Finder.vue.map */.list[data-v-26181b62] {
+  display: flex;
+  flex-direction: column;
+  min-width: 25px;
+  min-height: 10rem;
+  border-right: solid 1px rgba(204, 204, 204, 0.335);
+  overflow: auto;
+  flex-shrink: 0;
+}
+.list [draggable=true][data-v-26181b62] {
+  cursor: move;
+  cursor: grab;
+}
+.last[data-v-26181b62] {
+  flex-grow: 1;
+}
+
+/*# sourceMappingURL=FinderList.vue.map */.item[data-v-b012b6c0] {
+  padding-right: 10px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: dashed 3px transparent;
+}
+
+/*# sourceMappingURL=FinderList.vue.map */.item[data-v-b012b6c0]:hover {
+  background-color: #ffc1076e;
+}
+
+.item.expanded[data-v-b012b6c0] {
+  background-color: #ffc107;
+  color: black;
+}
+.item.dragged[data-v-b012b6c0] {
+  background-color: rgba(11, 121, 208, 0.5);
+}
+.item.drag-over[data-v-b012b6c0] {
+  border-color: #0b79d0;
+  background-color: rgba(11, 121, 208, 0.2);
+}
+.item.has-drag-handle .inner-item[data-v-b012b6c0] {
+  padding-left: 0;
+}
+.item.no-drop[data-v-b012b6c0] {
+  color: gray;
+}
+.item .inner-item[data-v-b012b6c0] {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+}
+.item[data-v-b012b6c0]:focus {
+  outline: none;
+}
+.item .drag-handle[data-v-b012b6c0] {
+  fill: #bbb;
+  padding: 10px 1px 10px 0;
+  width: 15px;
+  height: 15px;
+  cursor: move;
+  cursor: grab;
+}
+
+/*# sourceMappingURL=FinderItem.vue.map */.drop-zone[data-v-b2b8c02e] {
+  transition: height 0.1s ease;
+  height: 0.5em;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.drop-zone.drag-over[data-v-b2b8c02e] {
+  opacity: 0.5;
+  margin-bottom: 0;
+  height: 2em;
+  border: dashed 3px #0b79d0;
+  background-color: rgba(11, 121, 208, 0.2);
+}
+.no-drop *[data-v-b2b8c02e] {
+  cursor: no-drop;
+}
+
+/*# sourceMappingURL=FinderListDropZone.vue.map */.arrow[data-v-6c65f172] {
+  display: inline-block;
+  border-right: 3px solid black;
+  border-bottom: 3px solid black;
+  width: 6px;
+  height: 6px;
+  transform: rotate(-45deg);
+}
+.arrow.expanded[data-v-6c65f172] {
+  border-color: white;
+}
+
+/*# sourceMappingURL=FinderItemArrow.vue.map */
+        </style>
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
             rel="stylesheet"
             integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
             crossorigin="anonymous"
         >
+        <script src="https://kit.fontawesome.com/ff00e4a8c7.js" crossorigin="anonymous"></script>
     </head>
-    <body>
-        <div id="app">
+    
+    <body class="bg-light">
+      <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand ms-5 lead" style="font-size: 25px;" href="#">
+            MaxVision Store
+          </a>
+        </div>
+      </nav>
+      <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid" style="width: auto;">
+          <div class="row text-center " >
+            <div class="col itemhover" style="border-top-left-radius: 2rem; border-bottom-left-radius: 2rem;">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-tachometer-alt"></i><br>
+                  Dashboard
+                </p>
+              </a>
+            </div>
+            <div class="col selected">
+              <a class="navbar-brand p-2 ps-5 pe-5 text-dark" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-truck "></i><br>
+                  Bestellingen
+                </p>
+              </a>
+            </div>
+            <div class="col itemhover">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-store"></i><br>
+                  Verkoop
+                </p>
+              </a>
+            </div>
+            <div class="col itemhover">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-box"></i><br>
+                  Producten
+                </p>
+              </a>
+            </div>
+            <div class="col itemhover">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-plane-arrival"></i><br>
+                  Inkoop
+                </p>
+              </a>
+            </div>
+            <div class="col itemhover">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-warehouse"></i><br>
+                  Voorraad
+                </p>
+              </a>
+            </div>
+            <div class="col itemhover">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-cogs"></i><br>
+                  Administratie
+                </p>
+              </a>
+            </div>
+            <div class="col itemhover" style="border-top-right-radius: 2rem; border-bottom-right-radius: 2rem;">
+              <a class="navbar-brand p-2 ps-5 pe-5" href="#">
+                <p>
+                  <i  style="font-size: 25px;" class="fas fa-chart-pie"></i><br>
+                  Analyses
+                </p>
+              </a>
+            </div>
+            <!-- <div class="col">
+              <input @click="showModal=true" class="bg-dark text-warning input-style itemhover" style=" height: 100%; border-color:#ffc107; border-width:2px;" placeholder="Search Orders by name">
+              </input>
+            </div> -->
+          </div>
+        </div>
+      </nav>
+      <script type="text/x-template" id="modal-template">
+        <transition name="modal">
+          <div class="modal-mask">
+            <div class="modal-wrapper">
+              <div class="modal-container">
+  
+                <div class="modal-header">
+                  <slot name="header">
+                    default header
+                  </slot>
+                </div>
+  
+                <div class="modal-body">
+                  <slot name="body">
+                    default body
+                  </slot>
+                </div>
+  
+                <div class="modal-footer">
+                  <slot name="footer">
+                    default footer
+                    <button class="btn btn-danger" @click="$emit('close')">
+                      OK
+                    </button>
+                  </slot>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </script>
+      <style>
+        ::placeholder {
+          font-size: 18px;
+          color:#ffc107;
+          text-align: center;
+        }
+        .input-style {
+          border-top-right-radius: 2rem;
+          border-bottom-right-radius: 2rem;
+        }
+        .input-style:checked {
+          border-top-right-radius: 2rem;
+          border-bottom-right-radius: 2rem;
+          /* border: 1px solid #ffc107 */
+        }
+        input {
+          /* all: unset; */
+        }
+      </style>
+        <div id="app" class="container container-fluid mt-3">
+          
+          <div class="row">
+            <div class="col-8">
+            <u>
+              <h3>Openstaande Bestellingen</h3>
+            </u>
+            </div>
+            <div class="col-3">
+              <input @keydown="searchFilter" class="form-control form-control-lg" v-model="search" style="border-radius: 2rem; border: 1px solid black;" type="text" placeholder="Search Orders by Name" @click="showModal = true">
+            </div>
+          </div>
+          <div class="row bg-light">
+            <div class="col-lg-2 col-me-3" style="min-width: 25px;">
+              <h5 class="p-2">
+                Order Status
+              </h5>
+            </div>
+            <div class="col-lg-2 col-me-3" style="min-width: 25px;">
+              <h5 class="p-2">
+                Category
+              </h5>
+            </div>
+            <div class="col-lg-2 col-me-3" style="min-width: 25px;">
+              <h5 class="p-2">
+                Orders
+              </h5>
+            </div>
+          </div>
+          <!-- <button id="show-modal" @click="showModal = true">Show Modal</button> -->
+          <!-- use the modal component, pass in the prop -->
+          <modal v-if="showModal" @close="showModal = false">
+            <!--
+          you can use custom content here to overwrite
+          default content
+        -->
+        <div slot="header">
+          <button class="btn btn-danger" @click="showModal = false">
+            Close
+          </button>
+        </div>
+          <div slot="body">
+            <input @keydown="searchFilter" class="form-control form-control-lg" v-model="search" style="border-radius: 2rem; border: 1px solid black;" type="text" placeholder="Search Orders by Name">
+            <p>Start typing to narrow down the results....</p>
+            <div v-for="order in filteredOrders" :key="order.id">
+              <div class="card m-3" style="width: 100%;">
+                <div class="card-body">
+                  <h5 class="card-title">${order.fields.product}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">${order.fields.created}</h6>
+                  <p class="card-text">${order.fields.status}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div slot="footer">
+            <button class="btn btn-danger" @click="showModal = false">
+              Close
+            </button>
+          </div>
+            <!-- <h3 slot="header">custom header</h3> -->
+          </modal> 
             <finder :tree="tree"/>
         </div>
+        
     </body>
     <script type="text/javascript">
+      var all_orders = {{orders|jsonify}}
+      console.log(typeof(all_orders))
       var my_tree = {{order_tree|jsonify}}
       console.log(my_tree)
+      Vue.component("modal", {
+        template: "#modal-template"
+      });
     new Vue({
       el: "#app",
       delimiters: ['${','}'],
       data: {
-        tree: my_tree
+        tree: my_tree,
+        showModal: false,
+        search: '',
+        allOrders: all_orders,
+        filteredOrders: all_orders
+
       },
+      methods: {
+        searchFilter() {
+        this.filteredOrders = this.allOrders.filter((order) => {
+          console.log(order)
+        return order.fields.product.toLowerCase().includes(this.search.toLowerCase());
+      });
+      },
+      mounted() {
+        this.filteredOrders = all_orders
+      }
+      }
     });
     </script>
 </html>
+<style>
+  .selected {
+    background-color: #ffc107;
+    /* border-radius: 1rem; */
+  }
+  .itemhover {
+    /* border: 2px solid #ffc107 */
+  }
+  .itemhover:hover {
+    background-color: #ffc107b0;
+    /* border-radius: 1rem; */
+  }
+</style>
+
+
+<style>
+  .modal-mask {
+position: fixed;
+z-index: 9998;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+display: table;
+transition: opacity 0.3s ease;
+}
+
+.modal-wrapper {
+display: table-cell;
+vertical-align: middle;
+}
+
+.modal-container {
+width: 1000px;
+margin: 0px auto;
+padding: 20px 30px;
+background-color: #fff;
+border-radius: 2px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+transition: all 0.3s ease;
+/* font-family: Helvetica, Arial, sans-serif; */
+}
+
+.modal-header h3 {
+margin-top: 0;
+color: #42b983;
+}
+
+.modal-body {
+/* margin: 20px 0; */
+}
+
+.modal-default-button {
+float: right;
+}
+
+/*
+* The following styles are auto-applied to elements with
+* transition="modal" when their visibility is toggled
+* by Vue.js.
+*
+* You can easily play with the modal transition by editing
+* these styles.
+*/
+
+.modal-enter {
+opacity: 0;
+}
+
+.modal-leave-active {
+opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+-webkit-transform: scale(1.1);
+transform: scale(1.1);
+}
+
+</style>

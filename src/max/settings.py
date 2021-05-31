@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
     # 3rd part
     'jsonify',
+    'django_filters',
     # own
     'orders',
 ]
